@@ -22,6 +22,11 @@ if (!empty($_GET['color']) && preg_match('/[0-F][0-F][0-F][0-F][0-F][0-F]/i',$_G
 	$color='#7fd5ff';
 }
 
+if (!empty($_GET['if']) && preg_match('/[^0-9\,]/',$_GET['if']) == 0 ){ //tous les characteres sont pas un nombre ou une virgule
+	$rs=array();
+	preg_match_all('/[0-9]+/',$_GET['if'],$rs);
+	$interfaces = $rs[0];
+}
 
 
 
@@ -36,6 +41,10 @@ if (isset($start)){
 if (isset($end)){ 
 	$options .= "-e $end ";
 }
+foreach $interface as ($key=>$val){
+//todo : generer pour chaque interface demandée, une definition de donnée, un element du graph.
+}
+
 $defs= "DEF:in1=/tmp/interf1.rrd:in:AVERAGE ";
 $defs.= "DEF:out1=/tmp/interf1.rrd:out:AVERAGE ";
 $defs.= "DEF:in2=/tmp/interf2.rrd:in:AVERAGE "; 
