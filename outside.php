@@ -69,6 +69,7 @@ $grahElems= 'AREA:in1' .$color1. ':"trafic entrant" ';
 //$grahElems.= 'LINE1:mout2#FF0000:"inside - sortant" ';
 $grahElems.= 'LINE1:out1' .$color2. ':"trafic sortant" ';
 
+
 if ($_GET['debug'] == 1){
 	echo $cmd . $options . $defs . $grahElems;
 }
