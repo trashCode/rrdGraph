@@ -1,8 +1,6 @@
 <?php
 require './graphUtils.php';
 $cliniquesNames = array(1=>'verdun',2=>'partdieu',3=>'villeurbanne',4=>'oullins',6=>'saintfons',7=>'caluire',9=>'etatsunis',10=>'jeanmace');
-$cliniquesColors = array(1=>'FF0000',2=>'FFBF00',3=>'7FFF00',4=>'00FF3F',6=>'00FFFF',7=>'003FFF',9=>'7F00FF',10=>'FF00BF');
-$test = getXColorsInAngle(8);
 
 
 if (!empty($_GET['cliniques']) && preg_match('/[^0-9\,]/',$_GET['cliniques']) == 0 ){ //tous les characteres sont pas un nombre ou une virgule

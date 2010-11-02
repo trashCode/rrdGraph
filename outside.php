@@ -43,8 +43,8 @@ if (!empty($_GET['if']) && preg_match('/[^0-9\,]/',$_GET['if']) == 0 ){ //tous l
 
 
 
-$cmd = 'rrdtool graph tmp.png ';
-$options = "-t '$clinique' --vertical-label 'reseau CSD <== PIX ==> Internet  ' ";
+$cmd = "rrdtool graph $clinique.png ";
+$options = "-t '$clinique' ";
 if (isset($width) && isset($height)) {
 	$options .= "-w $width -h $height ";
 }
@@ -76,7 +76,7 @@ if ($_GET['debug'] == 1){
 exec($cmd . $options . $defs . $grahElems);
 //exec('convert -size ' .$size. ' gradient:white-\'' .$color. '\' -fill black -pointsize 40 -gravity northeast -annotate +100+40 \'' .$text. '\' -pointsize 15 -gravity southeast -annotate 0 \'' .$text2. '\' -blur 0x4 -fill \'' .$color. '\' -annotate 0 \'' .$text2. '\' -fill white -pointsize 40 -gravity northeast -annotate +100+40 \'' .$text. '\' test6.png');
 
-	if($flux = fopen('./tmp.png',r)){
+	if($flux = fopen("./$clinique.png",r)){
 		
 		while (!feof($flux)){
 			$source .= fgets($flux);
