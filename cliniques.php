@@ -1,11 +1,19 @@
 <?php
-$cliniques = array(1=>'verdun',2=>'partdieu',3=>'villeurbanne',4=>'oullins',6=>'saintfons',7=>'caluire',9=>'etatsunis',10=>'jeanmace');
+require './graphUtils.php';
+$cliniquesNames = array(1=>'verdun',2=>'partdieu',3=>'villeurbanne',4=>'oullins',6=>'saintfons',7=>'caluire',9=>'etatsunis',10=>'jeanmace');
+$cliniquesColors = array(1=>'FF0000',2=>'FFBF00',3=>'7FFF00',4=>'00FF3F',6=>'00FFFF',7=>'003FFF',9=>'7F00FF',10=>'FF00BF');
+$test = getXColorsInAngle(8);
 
-if (!empty($_GET['clinique']) && preg_match('/\D/',$_GET['clinique']) == 0){
-	$clinique = $cliniques[$_GET['clinique']];
+
+if (!empty($_GET['cliniques']) && preg_match('/[^0-9\,]/',$_GET['cliniques']) == 0 ){ //tous les characteres sont pas un nombre ou une virgule
+	$rs=array();
+	preg_match_all('/[0-9]+/',$_GET['cliniques'],$rs);
+	$cliniques = $rs[0];
 }else{
-	$clinique='verdun';
+	$cliniques= array(1,2,3,4,6,7,9,10);
 }
+$cliniquesColors=getXColorsInAngle(count($cliniques),0.75,0.75);
+
 
 if (!empty($_GET['size']) && preg_match('/[0-9]+x[0-9+]/',$_GET['size']) == 1){
 	$size=$_GET['size'];
@@ -43,8 +51,8 @@ if (!empty($_GET['if']) && preg_match('/[^0-9\,]/',$_GET['if']) == 0 ){ //tous l
 
 
 
-$cmd = 'rrdtool graph tmp.png ';
-$options = "-t '$clinique' --vertical-label 'reseau CSD <== PIX ==> Internet  ' ";
+$cmd = 'rrdtool graph cliniques.png ';
+$options = "-t 'cliniques' --vertical-label 'reseau CSD <== PIX ==> Internet  ' ";
 if (isset($width) && isset($height)) {
 	$options .= "-w $width -h $height ";
 }
@@ -57,17 +65,22 @@ if (isset($end)){
 //foreach ($interfaces as $key=>$val){
 //todo : generer pour chaque interface demandée, une definition de donnée, un element du graph.
 //}
+$def='';
+foreach ($cliniques as $key => $cliNum){
+	$defs.= "DEF:in$cliNum=data/$cliniquesNames[$cliNum].rrd:in1:AVERAGE ";
+	$defs.= "DEF:out$cliNum=data/$cliniquesNames[$cliNum].rrd:out1:AVERAGE ";
+}
 
-$defs= "DEF:in1=data/$clinique.rrd:in1:AVERAGE ";
-$defs.= "DEF:out1=data/$clinique.rrd:out1:AVERAGE ";
-//$defs.= "DEF:in2=/tmp/interf2.rrd:in:AVERAGE "; 
-//$defs.= "DEF:out2=/tmp/interf2.rrd:out:AVERAGE ";
-//$defs.= "CDEF:min2=in2,-1,* ";
-//$defs.= "CDEF:mout2=out2,-1,* ";
-//$grahElems.= 'AREA:min2#00FF00:"inside - entrant" ';
-//$grahElems.= 'LINE1:mout2#FF0000:"inside - sortant" ';
-$grahElems= 'AREA:out1' .$color2. ':"trafic sortant" ';
-$grahElems.= 'LINE1:in1' .$color1. ':"trafic entrant" ';
+$grahElems='';
+/*foreach ($cliniques as $key => $cliNum){
+	$grahElems.= 'AREA:out$cliNum' .$color2. ':"'.$cliniquesNames[$cliNum] .' trafic entrant" ';
+}*/
+$i=0;
+foreach ($cliniques as $key => $cliNum){
+	$grahElems.= 'LINE2:out' .$cliNum.$cliniquesColors[$i]. ':"'.$cliniquesNames[$cliNum] .' trafic sortant" ';
+	$i++;
+}
+
 
 
 if ($_GET['debug'] == 1){
@@ -76,7 +89,7 @@ if ($_GET['debug'] == 1){
 exec($cmd . $options . $defs . $grahElems);
 //exec('convert -size ' .$size. ' gradient:white-\'' .$color. '\' -fill black -pointsize 40 -gravity northeast -annotate +100+40 \'' .$text. '\' -pointsize 15 -gravity southeast -annotate 0 \'' .$text2. '\' -blur 0x4 -fill \'' .$color. '\' -annotate 0 \'' .$text2. '\' -fill white -pointsize 40 -gravity northeast -annotate +100+40 \'' .$text. '\' test6.png');
 
-	if($flux = fopen('./tmp.png',r)){
+	if($flux = fopen('./cliniques.png',r)){
 		
 		while (!feof($flux)){
 			$source .= fgets($flux);
